@@ -10,8 +10,6 @@ import {
 interface UseInfiniteDiaryDataOptions {
   sortOrder?: SortOrder;
   pageSize?: number;
-  autoRefresh?: boolean;
-  refreshInterval?: number; // in milliseconds
 }
 
 interface UseInfiniteDiaryDataReturn {
@@ -34,7 +32,6 @@ interface UseInfiniteDiaryDataReturn {
  * - Loading states for initial load and subsequent pages
  * - Error handling and retry capability
  * - Manual refetch capability
- * - Optional auto-refresh for real-time updates
  * - Configurable sort order and page size
  *
  * @param options Configuration options for data fetching
@@ -46,8 +43,6 @@ export function useInfiniteDiaryData(
   const {
     sortOrder = "newest-first",
     pageSize = 20, // Default to 20 entries per page
-    autoRefresh = false,
-    refreshInterval = 300000, // 5 minutes default
   } = options;
 
   const [data, setData] = useState<DiaryGalleryData | null>(null);
@@ -95,9 +90,9 @@ export function useInfiniteDiaryData(
 
       if (append) {
         // Append new entries to existing ones
-        setEntries(prev => [...prev, ...deserializedData.entries]);
+        setEntries((prev) => [...prev, ...deserializedData.entries]);
         // Update pagination info but keep existing entries count
-        setData(prev => ({
+        setData((prev) => ({
           ...deserializedData,
           entries: [...(prev?.entries || []), ...deserializedData.entries],
         }));
@@ -110,7 +105,6 @@ export function useInfiniteDiaryData(
       // Update pagination state
       setHasNextPage(deserializedData.pagination?.hasNextPage || false);
       setCurrentPage(page);
-
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Unknown error occurred";
@@ -127,11 +121,11 @@ export function useInfiniteDiaryData(
 
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasNextPage) return;
-    
+
     setLoadingMore(true);
     await fetchPage(currentPage + 1, true);
     setLoadingMore(false);
-  }, [currentPage, hasNextPage, loadingMore, sortOrder, pageSize]);
+  }, [currentPage, hasNextPage, loadingMore]);
 
   const refetch = async () => {
     setLoading(true);
@@ -143,18 +137,8 @@ export function useInfiniteDiaryData(
   // Initial data fetch
   useEffect(() => {
     fetchInitialData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortOrder, pageSize]); // Refetch when sort order or page size changes
-
-  // Auto-refresh setup
-  useEffect(() => {
-    if (!autoRefresh) return;
-
-    const interval = setInterval(() => {
-      refetch();
-    }, refreshInterval);
-
-    return () => clearInterval(interval);
-  }, [autoRefresh, refreshInterval, sortOrder, pageSize]);
 
   return {
     data,

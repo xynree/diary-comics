@@ -84,7 +84,6 @@ describe('DiaryGallery Infinite Scroll', () => {
       render(<DiaryGallery />);
 
       expect(screen.getByText('welcome to my diary :)')).toBeInTheDocument();
-      expect(screen.getByText(/Showing 10 of 100 entries/)).toBeInTheDocument();
       
       // Should show load more button when hasNextPage is true
       expect(screen.getByText('Load More')).toBeInTheDocument();
@@ -150,7 +149,7 @@ describe('DiaryGallery Infinite Scroll', () => {
       render(<DiaryGallery />);
 
       expect(screen.queryByText('Load More')).not.toBeInTheDocument();
-      expect(screen.getByText("You've reached the end!")).toBeInTheDocument();
+      expect(screen.getByText("You reached the end!")).toBeInTheDocument();
     });
   });
 
@@ -165,7 +164,6 @@ describe('DiaryGallery Infinite Scroll', () => {
       expect(mockUseInfiniteDiaryData).toHaveBeenCalledWith({
         sortOrder: 'newest-first',
         pageSize: 10,
-        autoRefresh: false,
       });
     });
   });
@@ -189,51 +187,9 @@ describe('DiaryGallery Infinite Scroll', () => {
     });
   });
 
-  describe('Refresh Functionality', () => {
-    it('should call refetch when refresh button is clicked', async () => {
-      const mockRefetch = jest.fn();
-      mockUseInfiniteDiaryData.mockReturnValue({
-        ...createMockHookReturn(20),
-        refetch: mockRefetch,
-      });
 
-      render(<DiaryGallery />);
 
-      const refreshButton = screen.getByText('Refresh');
-      fireEvent.click(refreshButton);
 
-      expect(mockRefetch).toHaveBeenCalledTimes(1);
-    });
-
-    it('should show refreshing state when loading', () => {
-      mockUseInfiniteDiaryData.mockReturnValue({
-        ...createMockHookReturn(20),
-        loading: true,
-      });
-
-      render(<DiaryGallery />);
-
-      expect(screen.getByText('Refreshing...')).toBeInTheDocument();
-    });
-  });
-
-  describe('Entry Count Display', () => {
-    it('should show correct entry count', () => {
-      mockUseInfiniteDiaryData.mockReturnValue(createMockHookReturn(20));
-
-      render(<DiaryGallery />);
-
-      expect(screen.getByText(/Showing 20 of 100 entries/)).toBeInTheDocument();
-    });
-
-    it('should show date range when available', () => {
-      mockUseInfiniteDiaryData.mockReturnValue(createMockHookReturn(10));
-
-      render(<DiaryGallery />);
-
-      expect(screen.getByText(/from.*to/)).toBeInTheDocument();
-    });
-  });
 
   describe('Empty State', () => {
     it('should show empty state when no entries are available', () => {

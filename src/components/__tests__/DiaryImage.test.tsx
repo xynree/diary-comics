@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { DiaryImage, ImageModal } from '../DiaryImage';
+import { DiaryImage } from '../DiaryImage';
+import { ImageModal } from '../ImageModal';
 import { DiaryImage as DiaryImageType } from '@/types/diary';
 
 // Mock Next.js Image component
@@ -42,18 +43,7 @@ describe('DiaryImage', () => {
     expect(image).toHaveAttribute('alt', `Diary entry from ${mockImage.filename}`);
   });
 
-  it('shows sequence indicator for images with sequence > 1', () => {
-    const imageWithSequence = { ...mockImage, sequence: 3 };
-    render(<DiaryImage image={imageWithSequence} />);
-    
-    expect(screen.getByText('3')).toBeInTheDocument();
-  });
 
-  it('does not show sequence indicator for first image', () => {
-    render(<DiaryImage image={mockImage} />);
-    
-    expect(screen.queryByText('1')).not.toBeInTheDocument();
-  });
 
   it('calls onClick when image is clicked', () => {
     const handleClick = jest.fn();
@@ -70,8 +60,7 @@ describe('DiaryImage', () => {
     fireEvent.error(image);
     
     await waitFor(() => {
-      expect(screen.getByText('Failed to load image')).toBeInTheDocument();
-      expect(screen.getByText(mockImage.filename)).toBeInTheDocument();
+      expect(screen.getByText('Image unavailable')).toBeInTheDocument();
     });
   });
 

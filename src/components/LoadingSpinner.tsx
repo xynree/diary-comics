@@ -42,24 +42,4 @@ export function LoadingSpinner({
   );
 }
 
-/**
- * Full-page loading overlay
- */
-export function LoadingOverlay({ text = 'Loading your diary comics...' }: { text?: string }) {
-  return (
-    <div className="fixed inset-0 bg-white bg-opacity-90 flex items-center justify-center z-50">
-      <LoadingSpinner size="lg" text={text} />
-    </div>
-  );
-}
 
-/**
- * Inline loading state for components
- */
-export function InlineLoading({ text = 'Loading...' }: { text?: string }) {
-  return (
-    <div className="flex items-center justify-center py-8">
-      <LoadingSpinner size="md" text={text} />
-    </div>
-  );
-}

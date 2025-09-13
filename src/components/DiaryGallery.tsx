@@ -1,13 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { DiaryGalleryData, SortOrder } from '@/types/diary';
+import { SortOrder } from '@/types/diary';
 import { DiaryEntry } from './DiaryEntry';
 import { useInfiniteDiaryData } from '@/hooks/useInfiniteDiaryData';
 import { LoadingSpinner } from './LoadingSpinner';
 
 interface DiaryGalleryProps {
-  initialData?: DiaryGalleryData;
   className?: string;
 }
 
@@ -21,7 +20,7 @@ interface DiaryGalleryProps {
  * - Infinite scroll with automatic loading
  * - Search and filtering (future enhancement)
  */
-export function DiaryGallery({ initialData, className = '' }: DiaryGalleryProps) {
+export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
   const [sortOrder, setSortOrder] = useState<SortOrder>('newest-first');
   const {
     data,
@@ -35,14 +34,13 @@ export function DiaryGallery({ initialData, className = '' }: DiaryGalleryProps)
   } = useInfiniteDiaryData({
     sortOrder,
     pageSize: 10, // Load 10 entries at a time
-    autoRefresh: false
   });
 
   // Ref for intersection observer
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
-  // Use initial data if available, otherwise use hook data
-  const galleryData = data || initialData;
+  // Use hook data
+  const galleryData = data;
 
   const handleSortChange = (newSortOrder: SortOrder) => {
     setSortOrder(newSortOrder);
@@ -85,59 +83,33 @@ export function DiaryGallery({ initialData, className = '' }: DiaryGalleryProps)
   return (
     <div className={`max-w-6xl mx-auto px-4 py-8 ${className}`}>
       {/* Gallery Header */}
-      <header className="mb-8">
-        <div className="text-center mb-6">
-          <h1 className="text-md font-semibold text-gray-800 mb-2">
-            welcome to my diary :)
-          </h1>
+      <header className="mb-8 text-center">
+        <h1 className="text-lg font-semibold text-gray-800 mb-4">
+          welcome to my diary :)
+        </h1>
 
-        </div>
-
-        {/* Controls */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          {/* Sort Controls */}
-          <div className="flex items-center space-x-2">
-            <div className="flex rounded-lg border border-gray-300 overflow-hidden">
-              <button
-                onClick={() => handleSortChange('newest-first')}
-                className={`px-3 py-1 text-sm font-medium transition-colors ${
-                  sortOrder === 'newest-first'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                Newest First
-              </button>
-              <button
-                onClick={() => handleSortChange('oldest-first')}
-                className={`px-3 py-1 text-sm font-medium transition-colors ${
-                  sortOrder === 'oldest-first'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                Oldest First
-              </button>
-            </div>
-          </div>
-
-          {/* Refresh Button */}
+        {/* Simple Sort Controls */}
+        <div className="flex justify-center items-center space-x-2 mb-4">
           <button
-            onClick={handleRefresh}
-            disabled={loading}
-            className="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+            onClick={() => handleSortChange('newest-first')}
+            className={`px-3 py-1 text-sm rounded transition-colors ${
+              sortOrder === 'newest-first'
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-600 hover:text-blue-600'
+            }`}
           >
-            <svg 
-              className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} 
-              fill="none" 
-              stroke="currentColor" 
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            <span className="text-sm font-medium">
-              {loading ? 'Refreshing...' : 'Refresh'}
-            </span>
+            Newest First
+          </button>
+          <span className="text-gray-400">|</span>
+          <button
+            onClick={() => handleSortChange('oldest-first')}
+            className={`px-3 py-1 text-sm rounded transition-colors ${
+              sortOrder === 'oldest-first'
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-600 hover:text-blue-600'
+            }`}
+          >
+            Oldest First
           </button>
         </div>
       </header>

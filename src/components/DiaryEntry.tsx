@@ -2,7 +2,8 @@
 
 import React, { useState, useRef } from 'react';
 import { DiaryEntry as DiaryEntryType, DiaryImage as DiaryImageType } from '@/types/diary';
-import { DiaryImage, ImageModal } from './DiaryImage';
+import { DiaryImage } from './DiaryImage';
+import { ImageModal } from './ImageModal';
 import { formatDisplayDate } from '@/utils/dateParser';
 
 interface DiaryEntryProps {
@@ -120,59 +121,7 @@ export function DiaryEntry({ entry, priority = false, className = '' }: DiaryEnt
   );
 }
 
-/**
- * Compact version of diary entry for list views or previews
- */
-interface DiaryEntryCompactProps {
-  entry: DiaryEntryType;
-  onClick?: (entry: DiaryEntryType) => void;
-  className?: string;
-}
 
-export function DiaryEntryCompact({ entry, onClick, className = '' }: DiaryEntryCompactProps) {
-  const handleClick = () => {
-    if (onClick) {
-      onClick(entry);
-    }
-  };
-
-  const firstImage = entry.images[0];
-
-  return (
-    <div 
-      className={`
-        flex items-center space-x-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-md 
-        transition-shadow cursor-pointer border border-gray-100 ${className}
-      `}
-      onClick={handleClick}
-    >
-      {/* Thumbnail */}
-      <div className="flex-shrink-0 w-16 h-16 relative overflow-hidden rounded-md">
-        <DiaryImage
-          image={firstImage}
-          className="w-full h-full object-cover"
-        />
-      </div>
-
-      {/* Entry info */}
-      <div className="flex-grow min-w-0">
-        <h3 className="font-medium text-gray-900 truncate">
-          {formatDisplayDate(entry.date)}
-        </h3>
-        <p className="text-sm text-gray-600">
-          {entry.imageCount} {entry.imageCount === 1 ? 'image' : 'images'}
-        </p>
-      </div>
-
-      {/* Arrow indicator */}
-      <div className="flex-shrink-0 text-gray-400">
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-        </svg>
-      </div>
-    </div>
-  );
-}
 
 /**
  * Horizontal carousel component for displaying diary images
