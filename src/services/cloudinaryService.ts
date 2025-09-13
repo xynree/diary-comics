@@ -19,16 +19,11 @@ import {
   DiaryImage,
   DiaryEntry,
   DiaryGalleryData,
-  CloudinaryResource,
   CloudinarySearchResponse,
   SortOrder,
   GalleryOptions,
 } from "@/types/diary";
-import {
-  parseFilename,
-  formatDateKey,
-  getYearFromDate,
-} from "@/utils/dateParser";
+import { parseFilename, formatDateKey } from "@/utils/dateParser";
 
 // Configure Cloudinary with environment variables
 // These should be set in your .env.local file:

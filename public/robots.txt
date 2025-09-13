@@ -1,0 +1,11 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+
+# Host
+Host: https://diary-comics.vercel.app
+
+# Sitemaps
+Sitemap: https://diary-comics.vercel.app/sitemap.xml

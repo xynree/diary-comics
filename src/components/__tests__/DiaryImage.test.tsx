@@ -5,12 +5,12 @@ import { DiaryImage as DiaryImageType } from '@/types/diary';
 
 // Mock Next.js Image component
 jest.mock('next/image', () => {
-  return function MockImage({ src, alt, onLoad, onError, ...props }: any) {
+  return function MockImage({ src, alt, onLoad, onError, ...props }: React.ComponentProps<'img'> & { onLoad?: () => void; onError?: () => void }) {
     return (
-      <img
-        src={src}
-        alt={alt}
-        onLoad={onLoad}
+      <div
+        data-src={src}
+        data-alt={alt}
+        onClick={() => { onLoad?.(); }}
         onError={onError}
         data-testid="diary-image"
         {...props}

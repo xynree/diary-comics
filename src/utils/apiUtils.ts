@@ -7,10 +7,27 @@ import { DiaryGalleryData, DiaryEntry, DiaryImage } from "@/types/diary";
  * These functions convert the string dates back to proper Date objects.
  */
 
+// Types for serialized data (with string dates)
+type SerializedDiaryImage = Omit<DiaryImage, "date"> & { date: string };
+type SerializedDiaryEntry = Omit<DiaryEntry, "date" | "images"> & {
+  date: string;
+  images: SerializedDiaryImage[];
+};
+type SerializedDiaryGalleryData = Omit<
+  DiaryGalleryData,
+  "entries" | "dateRange"
+> & {
+  entries: SerializedDiaryEntry[];
+  dateRange: {
+    earliest: string;
+    latest: string;
+  };
+};
+
 /**
  * Converts a DiaryImage with string dates back to proper Date objects
  */
-function deserializeDiaryImage(image: any): DiaryImage {
+function deserializeDiaryImage(image: SerializedDiaryImage): DiaryImage {
   return {
     ...image,
     date: new Date(image.date),
@@ -20,7 +37,7 @@ function deserializeDiaryImage(image: any): DiaryImage {
 /**
  * Converts a DiaryEntry with string dates back to proper Date objects
  */
-function deserializeDiaryEntry(entry: any): DiaryEntry {
+function deserializeDiaryEntry(entry: SerializedDiaryEntry): DiaryEntry {
   return {
     ...entry,
     date: new Date(entry.date),
@@ -37,7 +54,9 @@ function deserializeDiaryEntry(entry: any): DiaryEntry {
  * @param data Raw API response data with string dates
  * @returns DiaryGalleryData with proper Date objects
  */
-export function deserializeDiaryGalleryData(data: any): DiaryGalleryData {
+export function deserializeDiaryGalleryData(
+  data: SerializedDiaryGalleryData
+): DiaryGalleryData {
   return {
     entries: data.entries.map(deserializeDiaryEntry),
     totalEntries: data.totalEntries,

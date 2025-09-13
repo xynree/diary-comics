@@ -160,7 +160,11 @@ export class DuplicateHandler {
         }`
       );
       logger.error(`Error type: ${error?.constructor?.name}`);
-      logger.error(`HTTP code: ${error?.http_code || error?.error?.http_code}`);
+      logger.error(
+        `HTTP code: ${
+          (error as any)?.http_code || (error as any)?.error?.http_code
+        }`
+      );
       logger.error(`Context:`, {
         filePath,
         publicId,

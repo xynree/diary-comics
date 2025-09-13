@@ -18,7 +18,11 @@
     "upload:watch": "tsx scripts/upload.ts watch",
     "upload:config": "tsx scripts/upload.ts config",
     "upload:status": "tsx scripts/upload.ts status",
-    "upload:validate": "tsx scripts/upload.ts validate"
+    "upload:validate": "tsx scripts/upload.ts validate",
+    "deploy": "vercel --prod",
+    "deploy:preview": "vercel",
+    "deploy:check": "vercel inspect",
+    "postbuild": "next-sitemap"
   },
   "dependencies": {
     "@cloudinary/react": "^1.14.3",
@@ -48,9 +52,11 @@
     "eslint-config-next": "15.5.3",
     "jest": "^30.1.3",
     "jest-environment-jsdom": "^30.1.2",
+    "next-sitemap": "^4.2.3",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.1",
     "tsx": "^4.20.5",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vercel": "^48.0.0"
   }
 }
