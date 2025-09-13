@@ -163,7 +163,11 @@ export function sortDiaryEntries(
 /**
  * Creates complete gallery data with metadata
  */
-export function createGalleryData(entries: DiaryEntry[]): DiaryGalleryData {
+export function createGalleryData(
+  entries: DiaryEntry[],
+  allEntries?: DiaryEntry[],
+  options?: GalleryOptions
+): DiaryGalleryData {
   if (entries.length === 0) {
     return {
       entries: [],
@@ -183,14 +187,32 @@ export function createGalleryData(entries: DiaryEntry[]): DiaryGalleryData {
   const earliest = new Date(Math.min(...dates.map((d) => d.getTime())));
   const latest = new Date(Math.max(...dates.map((d) => d.getTime())));
 
+  // Create pagination metadata if options are provided
+  let pagination;
+  if (options?.pageSize && options?.page && allEntries) {
+    const totalEntries = allEntries.length;
+    const totalPages = Math.ceil(totalEntries / options.pageSize);
+
+    pagination = {
+      currentPage: options.page,
+      pageSize: options.pageSize,
+      totalPages,
+      hasNextPage: options.page < totalPages,
+      hasPreviousPage: options.page > 1,
+    };
+  }
+
   return {
     entries,
-    totalEntries: entries.length,
-    totalImages,
+    totalEntries: allEntries?.length || entries.length,
+    totalImages: allEntries
+      ? allEntries.reduce((sum, entry) => sum + entry.imageCount, 0)
+      : totalImages,
     dateRange: {
       earliest,
       latest,
     },
+    pagination,
   };
 }
 
@@ -202,9 +224,10 @@ export function createGalleryData(entries: DiaryEntry[]): DiaryGalleryData {
  * 1. Fetches all images from Cloudinary
  * 2. Groups images by date
  * 3. Sorts entries by date (newest or oldest first)
- * 4. Creates complete gallery metadata
+ * 4. Applies pagination if requested
+ * 5. Creates complete gallery metadata
  *
- * @param options Configuration options including sort order
+ * @param options Configuration options including sort order and pagination
  * @returns Promise<DiaryGalleryData> Complete gallery data with metadata
  */
 export async function getDiaryGalleryData(
@@ -220,8 +243,20 @@ export async function getDiaryGalleryData(
     // Step 3: Sort entries by date according to user preference
     const sortedEntries = sortDiaryEntries(entries, options.sortOrder);
 
-    // Step 4: Create complete gallery data with metadata (totals, date ranges, etc.)
-    const galleryData = createGalleryData(sortedEntries);
+    // Step 4: Apply pagination if requested
+    let paginatedEntries = sortedEntries;
+    if (options.pageSize && options.page) {
+      const startIndex = (options.page - 1) * options.pageSize;
+      const endIndex = startIndex + options.pageSize;
+      paginatedEntries = sortedEntries.slice(startIndex, endIndex);
+    }
+
+    // Step 5: Create complete gallery data with metadata (totals, date ranges, etc.)
+    const galleryData = createGalleryData(
+      paginatedEntries,
+      sortedEntries,
+      options
+    );
 
     return galleryData;
   } catch (error) {

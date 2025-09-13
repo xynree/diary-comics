@@ -48,6 +48,19 @@ export interface DiaryGalleryData {
     earliest: Date;
     latest: Date;
   };
+  /** Pagination metadata */
+  pagination?: {
+    /** Current page number (1-based) */
+    currentPage: number;
+    /** Number of entries per page */
+    pageSize: number;
+    /** Total number of pages */
+    totalPages: number;
+    /** Whether there are more pages available */
+    hasNextPage: boolean;
+    /** Whether there are previous pages available */
+    hasPreviousPage: boolean;
+  };
 }
 
 export interface CloudinaryResource {
@@ -81,7 +94,7 @@ export interface ParsedFilename {
   error?: string;
 }
 
-export type SortOrder = 'newest-first' | 'oldest-first';
+export type SortOrder = "newest-first" | "oldest-first";
 
 export interface GalleryOptions {
   /** Sort order for entries */
