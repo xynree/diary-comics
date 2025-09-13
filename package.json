@@ -13,13 +13,23 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
-    "test:all": "npm run test && npm run test:e2e"
+    "test:all": "npm run test && npm run test:e2e",
+    "upload": "tsx scripts/upload.ts",
+    "upload:watch": "tsx scripts/upload.ts watch",
+    "upload:config": "tsx scripts/upload.ts config",
+    "upload:status": "tsx scripts/upload.ts status",
+    "upload:validate": "tsx scripts/upload.ts validate"
   },
   "dependencies": {
     "@cloudinary/react": "^1.14.3",
     "@cloudinary/url-gen": "^1.22.0",
+    "chalk": "^5.6.2",
+    "chokidar": "^4.0.3",
+    "cli-progress": "^3.12.0",
     "cloudinary": "^2.7.0",
+    "commander": "^14.0.1",
     "date-fns": "^4.1.0",
+    "dotenv": "^17.2.2",
     "next": "15.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0"
@@ -40,6 +50,7 @@
     "jest-environment-jsdom": "^30.1.2",
     "tailwindcss": "^4",
     "ts-jest": "^29.4.1",
+    "tsx": "^4.20.5",
     "typescript": "^5"
   }
 }
