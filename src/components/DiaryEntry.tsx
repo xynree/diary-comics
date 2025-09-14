@@ -5,6 +5,7 @@ import { DiaryEntry as DiaryEntryType, DiaryImage as DiaryImageType } from '@/ty
 import { DiaryImage } from './DiaryImage';
 import { ImageModal } from './ImageModal';
 import { formatDisplayDate } from '@/utils/dateParser';
+import { ImageIcon, CarouselLeftIcon, CarouselRightIcon } from './icons/Icons';
 
 interface DiaryEntryProps {
   entry: DiaryEntryType;
@@ -74,32 +75,29 @@ export function DiaryEntry({ entry, priority = false, className = '' }: DiaryEnt
   const selectedImage = selectedImageIndex !== null ? entry.images[selectedImageIndex] : null;
 
   return (
-    <article className={`mb-12 ${className}`}>
+    <article className={`mb-10 ${className}`}>
       {/* Date Header */}
-      <header className="mb-6">
+      <header className="mb-1">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-gray-900 mb-1">
+            <h2 className="text-sm font-light tracking-wide text-gray-900 mb-2">
               {formatDisplayDate(entry.date)}
             </h2>
-
           </div>
-          
+
           {/* Entry actions */}
           <div className="flex items-center space-x-1">
-            <div className="flex items-center text-sm text-gray-600">
-              <span className="flex items-center">
-                <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+            <div className="flex items-center text-xs text-gray-400">
+              <span className="flex items-center font-light tracking-wide">
+                <ImageIcon className="w-3 h-3 mr-1" />
                 {entry.imageCount}
               </span>
             </div>
           </div>
         </div>
-        
+
         {/* Divider */}
-        <div className="mt-4 h-px bg-gradient-to-r from-gray-300 via-gray-200 to-transparent"></div>
+        <div className="mb-8 h-px bg-gray-200 "></div>
       </header>
 
       {/* Images Carousel */}
@@ -140,13 +138,23 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '' 
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+      // Scroll by the width of one individual image plus gap
+      const firstImage = scrollContainerRef.current.querySelector('.flex-shrink-0') as HTMLElement;
+      if (firstImage) {
+        const imageWidth = firstImage.offsetWidth + 16; // 16px for gap-4
+        scrollContainerRef.current.scrollBy({ left: -imageWidth, behavior: 'smooth' });
+      }
     }
   };
 
   const scrollRight = () => {
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+      // Scroll by the width of one individual image plus gap
+      const firstImage = scrollContainerRef.current.querySelector('.flex-shrink-0') as HTMLElement;
+      if (firstImage) {
+        const imageWidth = firstImage.offsetWidth + 16; // 16px for gap-4
+        scrollContainerRef.current.scrollBy({ left: imageWidth, behavior: 'smooth' });
+      }
     }
   };
 
@@ -178,12 +186,10 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '' 
       {canScrollLeft && (
         <button
           onClick={scrollLeft}
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-2 transition-all duration-200"
+          className="absolute left-6 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/75 rounded-full p-4 transition-all duration-200 shadow-sm cursor-pointer"
           aria-label="Scroll left"
         >
-          <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
+          <CarouselLeftIcon className="w-3 h-3 text-gray-600" />
         </button>
       )}
 
@@ -191,12 +197,10 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '' 
       {canScrollRight && (
         <button
           onClick={scrollRight}
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-2 transition-all duration-200"
+          className="absolute right-6 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/75  rounded-full p-4 transition-all duration-200 shadow-sm cursor-pointer"
           aria-label="Scroll right"
         >
-          <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
+          <CarouselRightIcon className="w-4 h-4 text-gray-600" />
         </button>
       )}
 
@@ -204,7 +208,7 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '' 
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className="flex gap-4 overflow-x-auto scrollbar-hide pb-2"
+        className="flex gap-6 overflow-x-auto scrollbar-hide pb-4"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {images.map((image, index) => (
@@ -213,7 +217,7 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '' 
               image={image}
               priority={priority && index === 0}
               onClick={onImageClick}
-              className="transition-all duration-200"
+              className="transition-all duration-300 hover:opacity-95"
             />
           </div>
         ))}

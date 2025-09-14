@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react';
 import Image from 'next/image';
 import { DiaryImage } from '@/types/diary';
+import { CloseIcon, ChevronLeftIcon, ChevronRightIcon } from './icons/Icons';
 
 interface ImageModalProps {
   image: DiaryImage | null;
@@ -60,24 +61,20 @@ export function ImageModal({ image, isOpen, onClose, onNext, onPrevious }: Image
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 text-white hover:text-gray-300 z-10"
+        className="absolute top-6 right-6 text-white/80 hover:text-white z-10 transition-colors duration-200"
         aria-label="Close modal"
       >
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        <CloseIcon className="w-6 h-6" />
       </button>
 
       {/* Previous button */}
       {onPrevious && (
         <button
           onClick={onPrevious}
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 z-10"
+          className="absolute left-6 top-1/2 transform -translate-y-1/2 text-white/80 hover:text-white z-10 transition-colors duration-200"
           aria-label="Previous image"
         >
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
+          <ChevronLeftIcon className="w-6 h-6" />
         </button>
       )}
 
@@ -85,12 +82,10 @@ export function ImageModal({ image, isOpen, onClose, onNext, onPrevious }: Image
       {onNext && (
         <button
           onClick={onNext}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 z-10"
+          className="absolute right-6 top-1/2 transform -translate-y-1/2 text-white/80 hover:text-white z-10 transition-colors duration-200"
           aria-label="Next image"
         >
-          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
+          <ChevronRightIcon className="w-6 h-6" />
         </button>
       )}
 
@@ -107,10 +102,10 @@ export function ImageModal({ image, isOpen, onClose, onNext, onPrevious }: Image
       </div>
 
       {/* Image info */}
-      <div className="absolute bottom-4 left-4 right-4 text-white text-center">
-        <div className="bg-black bg-opacity-50 rounded px-4 py-2 inline-block">
-          <p className="font-medium">{image.filename}</p>
-          <p className="text-sm text-gray-300">
+      <div className="absolute bottom-6 left-6 right-6 text-white text-center">
+        <div className="bg-black/40 backdrop-blur-sm rounded-lg px-4 py-3 inline-block">
+          <p className="font-light tracking-wide text-sm">{image.filename}</p>
+          <p className="text-xs text-white/70 mt-1 font-light">
             {image.width} × {image.height} • {Math.round(image.bytes / 1024)}KB
           </p>
         </div>
