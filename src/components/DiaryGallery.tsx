@@ -6,7 +6,7 @@ import { SortOrder } from '@/types/diary';
 import { DiaryEntry } from './DiaryEntry';
 import { useInfiniteDiaryData } from '@/hooks/useInfiniteDiaryData';
 import { LoadingSpinner } from './LoadingSpinner';
-import { PhotoIcon, ExclamationTriangleIcon, InstagramIcon, GitHubIcon, EmailIcon } from './icons/Icons';
+import { PhotoIcon, ExclamationTriangleIcon, InstagramIcon, GitHubIcon, EmailIcon, ChevronDownIcon, ArrowUpIcon } from './icons/Icons';
 
 interface DiaryGalleryProps {
   className?: string;
@@ -50,6 +50,35 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
 
   const handleRefresh = async () => {
     await refetch();
+  };
+
+  const handleSnapToNext = () => {
+    // Find the next diary entry that's not fully visible
+    const diaryEntries = document.querySelectorAll('article');
+    const viewportHeight = window.innerHeight;
+    const scrollTop = window.scrollY;
+
+    for (let i = 0; i < diaryEntries.length; i++) {
+      const entry = diaryEntries[i];
+      const rect = entry.getBoundingClientRect();
+      const entryTop = rect.top + scrollTop;
+
+      // If this entry is partially below the viewport, snap to it
+      if (entryTop > scrollTop + viewportHeight * 0.1) {
+        entry.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+        break;
+      }
+    }
+  };
+
+  const handleScrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
   };
 
   // Set up intersection observer for infinite scroll
@@ -99,8 +128,7 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
         </div>
 
         {/* Right side controls - Sort and Social */}
-        <div className="absolute top-1/8 right-0 flex flex-col space-y-7">
-
+        <div className="md:fixed absolute top-1/8 md:top-44 right-0 md:right-36 pr-4 md:pr-0 flex flex-col space-y-7">
 
           {/* Social Links */}
           <div className="flex flex-col space-y-2">
@@ -127,8 +155,10 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
               <EmailIcon className="w-4 h-4" />
             </a>
           </div>
+
           {/* Divider */}
           <div className="w-full h-px bg-gray-200 hidden md:block"></div>
+
           {/* Sort Controls */}
           <div className=" flex-col space-y-2 hidden md:flex">
             <button
@@ -151,6 +181,26 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
             >
               Oldest
             </button>
+          </div>
+
+          {/* Navigation Controls */}
+          <div className="w-full h-px bg-gray-200 hidden md:block"></div>
+          <div className="flex-col space-y-4 hidden md:flex">
+                 <button
+              onClick={handleScrollToTop}
+              className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-3 self-center cursor-pointer hover:bg-gray-100 rounded-full"
+              aria-label="Back to top"
+            >
+              <ArrowUpIcon className="w-4 h-4" />
+            </button>
+            <button
+              onClick={handleSnapToNext}
+              className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer duration-200 p-3 self-center hover:bg-gray-100 rounded-full"
+              aria-label="Snap to next panel"
+            >
+              <ChevronDownIcon className="w-4 h-4" />
+            </button>
+       
           </div>
         </div>
       </header>
