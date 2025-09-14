@@ -228,6 +228,7 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '',
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [touchStartX, setTouchStartX] = useState(0);
   const [touchEndX, setTouchEndX] = useState(0);
+  const [isScrolling, setIsScrolling] = useState(false);
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
@@ -269,40 +270,111 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '',
     }
   };
 
+  // Handle scroll start to track when user is actively scrolling
+  const handleScrollStart = () => {
+    setIsScrolling(true);
+  };
+
+  // Handle scroll end with debouncing
+  useEffect(() => {
+    let scrollTimeout: NodeJS.Timeout;
+
+    const handleScrollEnd = () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        setIsScrolling(false);
+      }, 100); // Reduced to 100ms for more responsive feel
+    };
+
+    const container = scrollContainerRef.current;
+    if (container) {
+      // Use passive listeners for better performance
+      container.addEventListener('scroll', handleScrollEnd, { passive: true });
+      container.addEventListener('touchstart', handleScrollStart, { passive: true });
+
+      return () => {
+        container.removeEventListener('scroll', handleScrollEnd);
+        container.removeEventListener('touchstart', handleScrollStart);
+        clearTimeout(scrollTimeout);
+      };
+    }
+  }, []);
+
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStartX(e.targetTouches[0].clientX);
+    setTouchEndX(0); // Reset end position
+    setIsScrolling(false); // Reset scrolling state on new touch
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     setTouchEndX(e.targetTouches[0].clientX);
+
+    // Calculate if this is a significant horizontal movement
+    const distance = Math.abs(touchStartX - e.targetTouches[0].clientX);
+
+    // If user is making a significant horizontal gesture, allow it to control scrolling
+    if (distance > 10) {
+      // This is likely an intentional swipe gesture
+      setIsScrolling(true);
+
+      // Allow the scroll container to handle the movement
+      if (scrollContainerRef.current) {
+        const swipeDistance = touchStartX - e.targetTouches[0].clientX;
+        const currentScrollLeft = scrollContainerRef.current.scrollLeft;
+
+        // Directly control scroll position for immediate response
+        scrollContainerRef.current.scrollLeft = currentScrollLeft + swipeDistance * 0.5;
+      }
+    }
   };
 
   const handleTouchEnd = () => {
-    if (!touchStartX || !touchEndX) return;
+    if (!touchStartX) return;
 
-    const distance = touchStartX - touchEndX;
+    const finalTouchX = touchEndX || touchStartX;
+    const distance = touchStartX - finalTouchX;
     const isLeftSwipe = distance > 50;
     const isRightSwipe = distance < -50;
+    const isSignificantSwipe = Math.abs(distance) > 50;
 
-    if (isLeftSwipe && currentImageIndex < images.length - 1) {
-      // Swipe left - go to next image
-      const nextIndex = currentImageIndex + 1;
-      scrollToImage(nextIndex);
+    // Handle swipe gestures for image navigation
+    if (isSignificantSwipe) {
+      if (isLeftSwipe && currentImageIndex < images.length - 1) {
+        // Swipe left - go to next image
+        const nextIndex = currentImageIndex + 1;
+        scrollToImage(nextIndex);
+      } else if (isRightSwipe && currentImageIndex > 0) {
+        // Swipe right - go to previous image
+        const prevIndex = currentImageIndex - 1;
+        scrollToImage(prevIndex);
+      }
+    } else {
+      // If it wasn't a significant swipe, snap to the nearest image
+      if (scrollContainerRef.current) {
+        const container = scrollContainerRef.current;
+        const imageWidth = container.clientWidth;
+        const currentScroll = container.scrollLeft;
+        const nearestIndex = Math.round(currentScroll / imageWidth);
+
+        // Snap to the nearest image
+        scrollToImage(Math.min(nearestIndex, images.length - 1));
+      }
     }
 
-    if (isRightSwipe && currentImageIndex > 0) {
-      // Swipe right - go to previous image
-      const prevIndex = currentImageIndex - 1;
-      scrollToImage(prevIndex);
-    }
+    // Reset touch positions and scrolling state
+    setTouchStartX(0);
+    setTouchEndX(0);
+    setIsScrolling(false);
   };
 
   const scrollToImage = (index: number) => {
     if (scrollContainerRef.current) {
       const imageWidth = scrollContainerRef.current.clientWidth;
+      // Use auto behavior for immediate response on mobile
+      const behavior = window.innerWidth < 768 ? 'auto' : 'smooth';
       scrollContainerRef.current.scrollTo({
         left: index * imageWidth,
-        behavior: 'smooth'
+        behavior: behavior
       });
     }
   };
@@ -355,11 +427,18 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '',
         className="flex gap-0 md:gap-6 overflow-x-auto scrollbar-hide pb-4 md:pb-4 mobile-snap-carousel md:snap-none"
         style={{
           scrollbarWidth: 'none',
-          msOverflowStyle: 'none'
+          msOverflowStyle: 'none',
+          touchAction: 'pan-x' // Only allow horizontal panning
         }}
       >
         {images.map((image, index) => (
-          <div key={image.publicId} className="flex-shrink-0 w-full md:w-full max-w-none md:max-w-2xl snap-start md:snap-align-none">
+          <div
+            key={image.publicId}
+            className="flex-shrink-0 w-full md:w-full max-w-none md:max-w-2xl snap-start md:snap-align-none"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             <DiaryImage
               image={image}
               priority={priority && index === 0}
