@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import Image from 'next/image';
 import { DiaryImage } from '@/types/diary';
 import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { getHighQualityUrl } from '@/utils/imageUtils';
 
 interface ImageModalProps {
   image: DiaryImage | null;
@@ -95,7 +96,7 @@ export function ImageModal({ image, isOpen, onClose, onNext, onPrevious }: Image
       {/* Image */}
       <div className="flex items-center justify-center w-full h-full">
         <Image
-          src={image.secureUrl}
+          src={getHighQualityUrl(image.secureUrl)}
           alt={`Diary entry from ${image.filename}`}
           width={image.width}
           height={image.height}

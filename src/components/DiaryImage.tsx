@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { DiaryImage as DiaryImageType } from '@/types/diary';
+import { getThumbnailUrl } from '@/utils/imageUtils';
 
 interface DiaryImageProps {
   image: DiaryImageType;
@@ -97,7 +98,7 @@ export function DiaryImage({
         isMobile ? 'rounded-none' : 'rounded-lg group-hover:shadow-lg'
       }`}>
         <Image
-          src={image.secureUrl}
+          src={getThumbnailUrl(image.secureUrl, isMobile)}
           alt={`Diary entry from ${image.filename}`}
           width={image.width}
           height={image.height}

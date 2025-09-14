@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { DiaryImage } from '../DiaryImage';
 import { ImageModal } from '../ImageModal';
 import { DiaryImage as DiaryImageType } from '@/types/diary';
+import { getThumbnailUrl } from '@/utils/imageUtils';
 
 // Mock Next.js Image component
 let mockImageBehavior: 'load' | 'error' = 'load';
@@ -57,7 +58,7 @@ describe('DiaryImage', () => {
     
     const image = screen.getByTestId('diary-image');
     expect(image).toBeInTheDocument();
-    expect(image).toHaveAttribute('data-src', mockImage.secureUrl);
+    expect(image).toHaveAttribute('data-src', getThumbnailUrl(mockImage.secureUrl, false));
     expect(image).toHaveAttribute('data-alt', `Diary entry from ${mockImage.filename}`);
   });
 
