@@ -101,7 +101,7 @@ export function DiaryEntry({ entry, priority = false, className = '' }: DiaryEnt
   return (
     <article className={`mb-10 ${className}`}>
       {/* Date Header */}
-      <header className="mb-1">
+      <header className="mb-1 px-6 md:px-0">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-sm font-light tracking-wide text-gray-900 mb-2">
@@ -109,8 +109,8 @@ export function DiaryEntry({ entry, priority = false, className = '' }: DiaryEnt
             </h2>
           </div>
 
-          {/* Entry actions */}
-          <div className="flex items-center space-x-1">
+          {/* Entry actions - only show on desktop */}
+          <div className="hidden md:flex items-center space-x-1">
             <div className="flex items-center text-xs text-gray-400">
               <span className="flex items-center font-light tracking-wide">
                 <ImageIcon className="w-3 h-3 mr-1" />
@@ -159,6 +159,7 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '' 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(images.length > 1);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
@@ -187,13 +188,21 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '' 
       const { scrollLeft, scrollWidth, clientWidth } = scrollContainerRef.current;
       setCanScrollLeft(scrollLeft > 0);
       setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
+
+      // Calculate current image index for mobile dot indicators
+      const firstImage = scrollContainerRef.current.querySelector('.flex-shrink-0') as HTMLElement;
+      if (firstImage) {
+        const imageWidth = firstImage.offsetWidth + 16; // 16px for gap-4
+        const newIndex = Math.round(scrollLeft / imageWidth);
+        setCurrentImageIndex(Math.min(newIndex, images.length - 1));
+      }
     }
   };
 
   // Single image - display centered without carousel controls
   if (images.length === 1) {
     return (
-      <div className={`max-w-2xl mx-auto ${className}`}>
+      <div className={`w-full md:max-w-2xl md:mx-auto ${className}`}>
         <DiaryImage
           image={images[0]}
           priority={priority}
@@ -206,22 +215,22 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '' 
 
   return (
     <div className={`relative ${className}`}>
-      {/* Left scroll button */}
+      {/* Left scroll button - hidden on mobile */}
       {canScrollLeft && (
         <button
           onClick={scrollLeft}
-          className="absolute left-6 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/75 rounded-full p-4 transition-all duration-200 shadow-sm cursor-pointer"
+          className="hidden md:block absolute left-6 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/75 rounded-full p-4 transition-all duration-200 shadow-sm cursor-pointer"
           aria-label="Scroll left"
         >
           <CarouselLeftIcon className="w-3 h-3 text-gray-600" />
         </button>
       )}
 
-      {/* Right scroll button */}
+      {/* Right scroll button - hidden on mobile */}
       {canScrollRight && (
         <button
           onClick={scrollRight}
-          className="absolute right-6 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/75  rounded-full p-4 transition-all duration-200 shadow-sm cursor-pointer"
+          className="hidden md:block absolute right-6 top-1/2 -translate-y-1/2 z-10 bg-white/30 hover:bg-white/75  rounded-full p-4 transition-all duration-200 shadow-sm cursor-pointer"
           aria-label="Scroll right"
         >
           <CarouselRightIcon className="w-4 h-4 text-gray-600" />
@@ -232,11 +241,11 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '' 
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className="flex gap-6 overflow-x-auto scrollbar-hide pb-4"
+        className="flex gap-0 md:gap-6 overflow-x-auto scrollbar-hide pb-4 md:pb-4"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {images.map((image, index) => (
-          <div key={image.publicId} className="flex-shrink-0 w-full max-w-2xl">
+          <div key={image.publicId} className="flex-shrink-0 w-full md:w-full max-w-none md:max-w-2xl">
             <DiaryImage
               image={image}
               priority={priority && index === 0}
@@ -246,6 +255,22 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '' 
           </div>
         ))}
       </div>
+
+      {/* Instagram-style dot indicators - only on mobile when multiple images */}
+      {images.length > 1 && (
+        <div className="md:hidden flex justify-center space-x-1 mt-3">
+          {images.map((_, index) => (
+            <div
+              key={index}
+              className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
+                index === currentImageIndex
+                  ? 'bg-blue-500'
+                  : 'bg-gray-300'
+              }`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

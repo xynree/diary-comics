@@ -70,7 +70,9 @@ export function DiaryImage({
 
   if (hasError) {
     return (
-      <div className={`bg-gray-100 rounded-lg flex items-center justify-center min-h-[200px] ${className}`}>
+      <div className={`bg-gray-100 flex items-center justify-center min-h-[200px] ${
+        isMobile ? 'rounded-none' : 'rounded-lg'
+      } ${className}`}>
         <span className="text-gray-400 text-sm">Image unavailable</span>
       </div>
     );
@@ -79,18 +81,20 @@ export function DiaryImage({
   return (
     <div
       className={`relative group transition-transform duration-200 ${
-        isMobile ? '' : 'cursor-pointer hover:scale-[1.02]'
+        isMobile ? '' : 'cursor-pointer'
       } ${className}`}
       onClick={handleClick}
     >
       {/* Loading skeleton */}
       {isLoading && (
-        <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-lg z-10" />
+        <div className={`absolute inset-0 bg-gray-200 animate-pulse z-10 ${
+          isMobile ? 'rounded-none' : 'rounded-lg'
+        }`} />
       )}
       
       {/* Main image */}
-      <div className={`relative overflow-hidden rounded-lg shadow-md transition-shadow duration-200 ${
-        isMobile ? '' : 'group-hover:shadow-lg'
+      <div className={`relative overflow-hidden shadow-md transition-shadow duration-200 ${
+        isMobile ? 'rounded-none' : 'rounded-lg group-hover:shadow-lg'
       }`}>
         <Image
           src={image.secureUrl}

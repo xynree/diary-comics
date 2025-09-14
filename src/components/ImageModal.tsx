@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { DiaryImage } from '@/types/diary';
 import { CloseIcon, ChevronLeftIcon, ChevronRightIcon } from './icons/Icons';
@@ -23,6 +23,7 @@ interface ImageModalProps {
  * - Navigation arrows for multiple images
  */
 export function ImageModal({ image, isOpen, onClose, onNext, onPrevious }: ImageModalProps) {
+
   // Handle keyboard navigation
   useEffect(() => {
     if (!isOpen) return;
@@ -45,6 +46,8 @@ export function ImageModal({ image, isOpen, onClose, onNext, onPrevious }: Image
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose, onNext, onPrevious]);
 
+
+
   if (!isOpen || !image) return null;
 
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -54,7 +57,7 @@ export function ImageModal({ image, isOpen, onClose, onNext, onPrevious }: Image
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black z-50 flex items-center justify-center p-4"
       onClick={handleBackdropClick}
     >
@@ -67,22 +70,22 @@ export function ImageModal({ image, isOpen, onClose, onNext, onPrevious }: Image
         <CloseIcon className="w-6 h-6" />
       </button>
 
-      {/* Previous button */}
+      {/* Previous button - hidden on mobile */}
       {onPrevious && (
         <button
           onClick={onPrevious}
-          className="absolute left-6 top-1/2 transform -translate-y-1/2 text-white/80 hover:text-white z-10 transition-colors duration-200"
+          className="hidden md:block absolute left-6 top-1/2 transform -translate-y-1/2 text-white/80 hover:text-white z-10 transition-colors duration-200"
           aria-label="Previous image"
         >
           <ChevronLeftIcon className="w-6 h-6" />
         </button>
       )}
 
-      {/* Next button */}
+      {/* Next button - hidden on mobile */}
       {onNext && (
         <button
           onClick={onNext}
-          className="absolute right-6 top-1/2 transform -translate-y-1/2 text-white/80 hover:text-white z-10 transition-colors duration-200"
+          className="hidden md:block absolute right-6 top-1/2 transform -translate-y-1/2 text-white/80 hover:text-white z-10 transition-colors duration-200"
           aria-label="Next image"
         >
           <ChevronRightIcon className="w-6 h-6" />

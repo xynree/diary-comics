@@ -83,7 +83,7 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
   }
 
   return (
-    <div className={`max-w-5xl mx-auto p-6 ${className}`}>
+    <div className={`max-w-5xl mx-auto p-0 md:p-6 ${className}`}>
       {/* Gallery Header */}
       <header className="relative my-5">
         <div className="text-center">
@@ -93,7 +93,7 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
             width={250}
             height={0}
             style={{ height: 'auto' }}
-            className="mx-auto"
+            className="mx-auto w-28 md:w-[250px]"
             priority
           />
         </div>
@@ -128,9 +128,9 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
             </a>
           </div>
           {/* Divider */}
-          <div className="w-full h-px bg-gray-200"></div>
+          <div className="w-full h-px bg-gray-200 hidden md:block"></div>
           {/* Sort Controls */}
-          <div className="flex flex-col space-y-2">
+          <div className=" flex-col space-y-2 hidden md:flex">
             <button
               onClick={() => handleSortChange('newest-first')}
               className={`cursor-pointer px-3 py-1 rounded text-xs font-medium transition-all duration-200 hover:bg-gray-100/50 ${
