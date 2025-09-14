@@ -101,15 +101,6 @@ export function ImageModal({ image, isOpen, onClose, onNext, onPrevious }: Image
         />
       </div>
 
-      {/* Image info */}
-      <div className="absolute bottom-6 left-6 right-6 text-white text-center">
-        <div className="bg-black/40 backdrop-blur-sm rounded-lg px-4 py-3 inline-block">
-          <p className="font-light tracking-wide text-sm">{image.filename}</p>
-          <p className="text-xs text-white/70 mt-1 font-light">
-            {image.width} × {image.height} • {Math.round(image.bytes / 1024)}KB
-          </p>
-        </div>
-      </div>
     </div>
   );
 }
