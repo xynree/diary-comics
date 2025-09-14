@@ -58,23 +58,24 @@ body {
   transition-duration: 150ms;
 }
 
-/* Mobile image carousel snap scrolling with responsive behavior */
+/* Mobile image carousel with gentle snap and vertical scroll support */
 @media (max-width: 768px) {
   .mobile-snap-carousel {
-    scroll-snap-type: x mandatory;
-    scroll-behavior: auto; /* Changed from smooth to auto for immediate response */
+    scroll-snap-type: x proximity; /* Use proximity for gentler snapping */
     -webkit-overflow-scrolling: touch; /* Better iOS scrolling */
     overscroll-behavior-x: contain; /* Prevent page scroll when at boundaries */
-    touch-action: pan-x; /* Only allow horizontal panning */
+    touch-action: pan-x pan-y; /* Allow both horizontal carousel and vertical page scrolling */
   }
 
   .mobile-snap-carousel::-webkit-scrollbar {
     display: none;
   }
 
-  /* Ensure image containers are touchable */
+  /* Gentle snap points that don't interfere with page scrolling */
   .mobile-snap-carousel > div {
-    touch-action: pan-x; /* Allow horizontal touch gestures on image containers */
+    scroll-snap-align: start; /* Align to start of container */
+    scroll-snap-stop: normal; /* Allow natural scrolling through multiple images */
+    touch-action: pan-x pan-y; /* Allow both horizontal and vertical gestures */
     user-select: none; /* Prevent text selection during touch */
     -webkit-user-select: none;
     -moz-user-select: none;

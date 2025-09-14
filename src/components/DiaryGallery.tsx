@@ -37,7 +37,7 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
     refetch
   } = useInfiniteDiaryData({
     sortOrder,
-    pageSize: 10, // Load 10 entries at a time
+    pageSize: 5, // Load 10 entries at a time
   });
 
   // Ref for intersection observer
