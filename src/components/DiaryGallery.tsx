@@ -199,7 +199,7 @@ function GalleryLoadingSkeleton() {
   return (
     <div className="max-w-5xl mx-auto px-6 py-16">
       <div className="text-center mb-12">
-        <LoadingSpinner size="lg" text="Loading..." />
+        <LoadingSpinner size="md" text="Loading..." />
       </div>
 
       <div className="animate-pulse">

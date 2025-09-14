@@ -67,7 +67,8 @@ export function parseFilename(filename: string): ParsedFilename {
   // Assume years 00-30 are 2000-2030, years 31-99 are 1931-1999
   const fullYear = year <= 30 ? 2000 + year : 1900 + year;
 
-  const date = new Date(fullYear, month - 1, day); // month is 0-indexed in Date constructor
+  // Create date at noon to avoid timezone issues with date boundaries
+  const date = new Date(fullYear, month - 1, day, 12, 0, 0, 0);
 
   // Validate that the date is valid (handles leap years, month lengths, etc.)
   if (
@@ -104,13 +105,29 @@ export function formatDateKey(date: Date): string {
 
 /**
  * Formats a date for display (e.g., "January 1, 2021")
+ * Uses manual formatting to avoid timezone issues
  */
 export function formatDisplayDate(date: Date): string {
-  return date.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const year = date.getFullYear();
+  const month = months[date.getMonth()];
+  const day = date.getDate();
+
+  return `${month} ${day}, ${year}`;
 }
 
 /**

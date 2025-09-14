@@ -9,19 +9,24 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Diary Comics",
+  title: "xyn's diary",
   description: "A personal collection of daily diary comics, beautifully organized and displayed chronologically.",
   keywords: ["diary", "comics", "art", "daily", "journal", "visual", "gallery"],
-  authors: [{ name: "Xinrui Chen" }], // Update with your name
+  authors: [{ name: "Xinrui Chen" }],
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
   openGraph: {
-    title: "Diary Comics",
+    title: "xyn's diary",
     description: "A personal collection of daily diary comics, beautifully organized and displayed chronologically.",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Diary Comics",
+    title: "xyn's diary",
     description: "A personal collection of daily diary comics, beautifully organized and displayed chronologically.",
   },
   robots: {

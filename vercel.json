@@ -1,33 +1,7 @@
 {
   "version": 2,
-  "name": "diary-comics",
   "alias": ["diary-comics"],
   "regions": ["iad1"],
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "env": {
-    "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME": "@cloudinary-cloud-name",
-    "CLOUDINARY_CLOUD_NAME": "@cloudinary-cloud-name",
-    "CLOUDINARY_API_KEY": "@cloudinary-api-key",
-    "CLOUDINARY_API_SECRET": "@cloudinary-api-secret"
-  },
-  "build": {
-    "env": {
-      "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME": "@cloudinary-cloud-name",
-      "CLOUDINARY_CLOUD_NAME": "@cloudinary-cloud-name",
-      "CLOUDINARY_API_KEY": "@cloudinary-api-key",
-      "CLOUDINARY_API_SECRET": "@cloudinary-api-secret"
-    }
-  },
-  "functions": {
-    "src/app/api/**/*.ts": {
-      "maxDuration": 30
-    }
-  },
   "headers": [
     {
       "source": "/api/(.*)",
