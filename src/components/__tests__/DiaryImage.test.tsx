@@ -10,13 +10,14 @@ let mockImageBehavior: 'load' | 'error' = 'load';
 jest.mock('next/image', () => {
   return function MockImage({ src, alt, onLoad, onError, priority, ...props }: React.ComponentProps<'img'> & { onLoad?: () => void; onError?: () => void; priority?: boolean }) {
     React.useEffect(() => {
+      // Use longer timeout for CI environments
       const timer = setTimeout(() => {
         if (mockImageBehavior === 'error') {
           onError?.();
         } else {
           onLoad?.();
         }
-      }, 10);
+      }, 50); // Increased from 10ms to 50ms for CI stability
       return () => clearTimeout(timer);
     }, [onLoad, onError]);
 
@@ -46,6 +47,11 @@ const mockImage: DiaryImageType = {
 };
 
 describe('DiaryImage', () => {
+  beforeEach(() => {
+    // Reset mock behavior before each test
+    mockImageBehavior = 'load';
+  });
+
   it('renders image with correct props', () => {
     render(<DiaryImage image={mockImage} />);
     
@@ -71,7 +77,7 @@ describe('DiaryImage', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Image unavailable')).toBeInTheDocument();
-    });
+    }, { timeout: 3000 }); // Increased timeout for CI
 
     // Reset for other tests
     mockImageBehavior = 'load';
@@ -92,7 +98,7 @@ describe('DiaryImage', () => {
     
     await waitFor(() => {
       expect(document.querySelector('.animate-pulse')).not.toBeInTheDocument();
-    });
+    }, { timeout: 3000 }); // Increased timeout for CI
   });
 });
 

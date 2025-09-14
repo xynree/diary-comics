@@ -11,6 +11,7 @@
 
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { useInfiniteDiaryData } from "@/hooks/useInfiniteDiaryData";
+import { SortOrder } from "@/types/diary";
 
 // Mock the API utils
 jest.mock("@/utils/apiUtils", () => ({
@@ -276,8 +277,9 @@ describe("useInfiniteDiaryData", () => {
       } as Response);
 
       const { result, rerender } = renderHook(
-        ({ sortOrder }) => useInfiniteDiaryData({ sortOrder, pageSize: 10 }),
-        { initialProps: { sortOrder: "newest-first" as const } }
+        ({ sortOrder }: { sortOrder: SortOrder }) =>
+          useInfiniteDiaryData({ sortOrder, pageSize: 10 }),
+        { initialProps: { sortOrder: "newest-first" as SortOrder } }
       );
 
       await waitFor(() => {
@@ -287,7 +289,7 @@ describe("useInfiniteDiaryData", () => {
       expect(mockFetch).toHaveBeenCalledTimes(1);
 
       // Change sort order
-      rerender({ sortOrder: "oldest-first" as const });
+      rerender({ sortOrder: "oldest-first" as SortOrder });
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledTimes(2);
