@@ -7,6 +7,7 @@ import { ImageModal } from './ImageModal';
 import { formatDisplayDate } from '@/utils/dateParser';
 import { CarouselLeftIcon, CarouselRightIcon } from './icons/Icons';
 import { LinkIcon } from '@heroicons/react/24/outline';
+import { Tooltip } from 'react-tooltip';
 
 // Hook to detect mobile devices
 function useIsMobile() {
@@ -46,6 +47,7 @@ export function DiaryEntry({ entry, priority = false, className = '' }: DiaryEnt
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showLinkCopiedTooltip, setShowLinkCopiedTooltip] = useState(false);
   const isMobile = useIsMobile();
 
   const handleImageClick = (image: DiaryImageType) => {
@@ -68,8 +70,10 @@ export function DiaryEntry({ entry, priority = false, className = '' }: DiaryEnt
     const url = `${window.location.origin}${window.location.pathname}#entry-${entry.dateKey}`;
     try {
       await navigator.clipboard.writeText(url);
-      // Could add a toast notification here in the future
-    } catch (err) {
+      // Show tooltip
+      setShowLinkCopiedTooltip(true);
+      setTimeout(() => setShowLinkCopiedTooltip(false), 2000);
+    } catch {
       // Fallback for older browsers
       const textArea = document.createElement('textarea');
       textArea.value = url;
@@ -77,6 +81,9 @@ export function DiaryEntry({ entry, priority = false, className = '' }: DiaryEnt
       textArea.select();
       document.execCommand('copy');
       document.body.removeChild(textArea);
+      // Show tooltip
+      setShowLinkCopiedTooltip(true);
+      setTimeout(() => setShowLinkCopiedTooltip(false), 2000);
     }
   };
 
@@ -121,20 +128,34 @@ export function DiaryEntry({ entry, priority = false, className = '' }: DiaryEnt
       {/* Date Header */}
       <header className="mb-3 mx-20 md:px-0">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1 w-full">
+          <div className="flex items-center md:justify-start justify-between gap-1 w-full">
             <h2 className="text-sm font-light tracking-wide text-gray-900 ">
               {formatDisplayDate(entry.date)}
             </h2>
 
-          {/* Link button */}
+          {/* Link button with tooltip */}
             <button
               onClick={handleCopyLink}
-              className="text-gray-400 cursor-pointer hover:text-gray-600 transition-colors duration-200 p-2 ml-auto md:ml-0 hover:bg-gray-100 rounded-full"
+              className="text-gray-400 cursor-pointer hover:text-gray-600 transition-colors duration-200 p-2 hover:bg-gray-100 rounded-full"
               aria-label="Copy link to this entry"
-              title="Copy link to this entry"
+              data-tooltip-id={`link-tooltip-${entry.dateKey}`}
+              data-tooltip-content={showLinkCopiedTooltip ? "Link copied!" : "Copy link"}
             >
               <LinkIcon className="w-3 h-3" />
             </button>
+
+            {/* React Tooltip */}
+            <Tooltip
+              id={`link-tooltip-${entry.dateKey}`}
+              place="top"
+              style={{
+                backgroundColor: showLinkCopiedTooltip ? '#1f2937': '#4A4A4A',
+                color: '#ffffff',
+                fontSize: '12px',
+                borderRadius: '4px',
+                padding: '4px 6px'
+              }}
+            />
           </div>
 
 
@@ -286,10 +307,10 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '',
     }
   };
 
-  // Single image - display centered without carousel controls
+  // Single image - display full width on desktop, centered on mobile
   if (images.length === 1) {
     return (
-      <div className={`w-full md:max-w-2xl md:mx-auto ${className}`}>
+      <div className={`w-full ${className}`}>
         <DiaryImage
           image={images[0]}
           priority={priority}

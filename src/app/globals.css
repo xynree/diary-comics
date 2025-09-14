@@ -69,3 +69,12 @@ body {
     display: none;
   }
 }
+
+/* Desktop controls positioning - only applies on desktop */
+@media (min-width: 768px) {
+  .desktop-controls-position {
+    left: calc(50vw + 480px);
+  }
+}
+
+

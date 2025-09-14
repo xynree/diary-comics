@@ -83,7 +83,7 @@ describe('DiaryGallery Infinite Scroll', () => {
 
       render(<DiaryGallery />);
 
-      expect(screen.getByText('welcome to my diary :)')).toBeInTheDocument();
+      expect(screen.getByAltText('Welcome to my diary')).toBeInTheDocument();
       
       // Should show load more button when hasNextPage is true
       expect(screen.getByText('Load More')).toBeInTheDocument();
@@ -175,7 +175,7 @@ describe('DiaryGallery Infinite Scroll', () => {
 
       render(<DiaryGallery />);
 
-      const oldestFirstButton = screen.getByText('Oldest First');
+      const oldestFirstButton = screen.getByText('Oldest');
       fireEvent.click(oldestFirstButton);
 
       // The hook should be called with the new sort order

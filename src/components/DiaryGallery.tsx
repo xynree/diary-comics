@@ -71,16 +71,28 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
           behavior: 'smooth',
           block: 'start'
         });
+
+        // Update URL hash after scroll animation completes
+        const entryId = entry.id;
+        if (entryId) {
+          setTimeout(() => {
+            window.history.replaceState(null, '', `#${entryId}`);
+          }, 500); // Wait for smooth scroll to complete
+        }
         break;
       }
     }
   };
 
   const handleScrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    // Ensure we never scroll past the top
+    const currentScrollY = window.scrollY;
+    if (currentScrollY > 0) {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
   };
 
   // Handle URL anchor navigation
@@ -134,6 +146,18 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
     return () => observer.disconnect();
   }, [hasNextPage, loadingMore, loadMore]);
 
+  // Prevent scrolling past the top of the page
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY < 0) {
+        window.scrollTo(0, 0);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   if (loading && !galleryData) {
     return <GalleryLoadingSkeleton />;
   }
@@ -147,7 +171,7 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
   }
 
   return (
-    <div className={`max-w-5xl mx-auto p-0 md:p-6 ${className}`}>
+    <div className={`max-w-5xl mx-auto p-0 md:p-6 ${className} relative`}>
       {/* Gallery Header */}
       <header className="relative my-5">
         <div className="text-center">
@@ -163,7 +187,7 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
         </div>
 
         {/* Right side controls - Sort and Social */}
-        <div className="md:fixed absolute top-1/8 md:top-44 right-0 md:right-36 pr-4 md:pr-0 flex flex-col space-y-7">
+        <div className="md:fixed md:top-44 absolute w-min top-1/8 right-0 pr-4 md:pr-0 flex flex-col space-y-7 desktop-controls-position">
 
           {/* Social Links */}
           <div className="flex flex-col space-y-2">
@@ -220,7 +244,7 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
 
           {/* Navigation Controls */}
           <div className="w-full h-px bg-gray-200 hidden md:block"></div>
-          <div className="flex-col space-y-4 hidden md:flex">
+          <div className="flex-col gap-4 hidden md:flex">
                  <button
               onClick={handleScrollToTop}
               className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-3 self-center cursor-pointer hover:bg-gray-100 rounded-full"
@@ -273,6 +297,16 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
           </div>
         )}
       </main>
+
+      {/* Mobile floating "next entry" button */}
+      <button
+        onClick={handleSnapToNext}
+        className="md:hidden fixed bottom-7 right-7 bg-white border border-gray-300 hover:border-gray-900 hover:bg-gray-50 text-gray-600 hover:text-gray-900 rounded-full p-3 shadow-lg transition-all duration-200 z-50"
+        aria-label="Go to next entry"
+        title="Go to next entry"
+      >
+        <ChevronDoubleDownIcon className="w-4 h-4" />
+      </button>
     </div>
   );
 }
