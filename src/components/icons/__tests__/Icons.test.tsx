@@ -11,6 +11,7 @@ import {
   CarouselRightIcon,
   InstagramIcon,
   GitHubIcon,
+  EmailIcon,
 } from '../Icons';
 
 describe('Icons', () => {
@@ -128,6 +129,16 @@ describe('Icons', () => {
     });
   });
 
+  describe('EmailIcon', () => {
+    it('renders with default props', () => {
+      const { container } = render(<EmailIcon />);
+      const icon = container.querySelector('svg');
+      expect(icon).toBeInTheDocument();
+      expect(icon).toHaveClass('w-5', 'h-5');
+      expect(icon).toHaveAttribute('fill', 'currentColor');
+    });
+  });
+
   describe('Icon consistency', () => {
     it('all icons have proper SVG structure', () => {
       const strokeIcons = [
@@ -145,6 +156,7 @@ describe('Icons', () => {
       const fillIcons = [
         InstagramIcon,
         GitHubIcon,
+        EmailIcon,
       ];
 
       // Test stroke-based icons

@@ -6,7 +6,7 @@ import { SortOrder } from '@/types/diary';
 import { DiaryEntry } from './DiaryEntry';
 import { useInfiniteDiaryData } from '@/hooks/useInfiniteDiaryData';
 import { LoadingSpinner } from './LoadingSpinner';
-import { PhotoIcon, ExclamationTriangleIcon, InstagramIcon, GitHubIcon } from './icons/Icons';
+import { PhotoIcon, ExclamationTriangleIcon, InstagramIcon, GitHubIcon, EmailIcon } from './icons/Icons';
 
 interface DiaryGalleryProps {
   className?: string;
@@ -98,28 +98,60 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
           />
         </div>
 
-        {/* Vertical Sort Controls - positioned on the right */}
-        <div className="absolute top-1/2 right-0 flex flex-col space-y-2">
-          <button
-            onClick={() => handleSortChange('newest-first')}
-            className={`cursor-pointer px-3 py-1 rounded text-xs font-medium transition-all duration-200 hover:bg-gray-100/50 ${
-              sortOrder === 'newest-first'
-                ? 'text-gray-900 bg-gray-100'
-                : 'text-gray-500 hover:text-gray-900'
-            }`}
-          >
-            Newest
-          </button>
-          <button
-            onClick={() => handleSortChange('oldest-first')}
-            className={`cursor-pointer px-3 py-1 rounded text-xs font-medium transition-all duration-200 hover:bg-gray-100/50 ${
-              sortOrder === 'oldest-first'
-                ? 'text-gray-900 bg-gray-100'
-                : 'text-gray-500 hover:text-gray-900'
-            }`}
-          >
-            Oldest
-          </button>
+        {/* Right side controls - Sort and Social */}
+        <div className="absolute top-1/8 right-0 flex flex-col space-y-7">
+
+
+          {/* Social Links */}
+          <div className="flex flex-col space-y-2">
+            <a
+              href="https://instagram.com/xynree"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1 self-center"
+            >
+              <InstagramIcon className="w-4 h-4" />
+            </a>
+            <a
+              href="https://github.com/xynree"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1 self-center"
+            >
+              <GitHubIcon className="w-4 h-4" />
+            </a>
+            <a
+              href="mailto:xynree@gmail.com"
+              className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1 self-center"
+            >
+              <EmailIcon className="w-4 h-4" />
+            </a>
+          </div>
+          {/* Divider */}
+          <div className="w-full h-px bg-gray-200"></div>
+          {/* Sort Controls */}
+          <div className="flex flex-col space-y-2">
+            <button
+              onClick={() => handleSortChange('newest-first')}
+              className={`cursor-pointer px-3 py-1 rounded text-xs font-medium transition-all duration-200 hover:bg-gray-100/50 ${
+                sortOrder === 'newest-first'
+                  ? 'text-gray-900 bg-gray-100'
+                  : 'text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              Newest
+            </button>
+            <button
+              onClick={() => handleSortChange('oldest-first')}
+              className={`cursor-pointer px-3 py-1 rounded text-xs font-medium transition-all duration-200 hover:bg-gray-100/50 ${
+                sortOrder === 'oldest-first'
+                  ? 'text-gray-900 bg-gray-100'
+                  : 'text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              Oldest
+            </button>
+          </div>
         </div>
       </header>
 
@@ -156,30 +188,6 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
           </div>
         )}
       </main>
-
-      <footer>
-        {/* Social Links */}
-        <div className="flex justify-center items-center space-x-8 border-t border-gray-200 pt-12 mt-16">
-          <a
-            href="https://instagram.com/xynree"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
-          >
-            <InstagramIcon className="w-5 h-5" />
-          </a>
-
-          <a
-            href="https://github.com/xynree"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
-          >
-            <GitHubIcon className="w-5 h-5" />
-          </a>
-        </div>
-      </footer>
-
     </div>
   );
 }

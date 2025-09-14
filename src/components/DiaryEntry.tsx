@@ -1,11 +1,29 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { DiaryEntry as DiaryEntryType, DiaryImage as DiaryImageType } from '@/types/diary';
 import { DiaryImage } from './DiaryImage';
 import { ImageModal } from './ImageModal';
 import { formatDisplayDate } from '@/utils/dateParser';
 import { ImageIcon, CarouselLeftIcon, CarouselRightIcon } from './icons/Icons';
+
+// Hook to detect mobile devices
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768); // Tailwind's md breakpoint
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  return isMobile;
+}
 
 interface DiaryEntryProps {
   entry: DiaryEntryType;
@@ -26,8 +44,14 @@ interface DiaryEntryProps {
 export function DiaryEntry({ entry, priority = false, className = '' }: DiaryEntryProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const isMobile = useIsMobile();
 
   const handleImageClick = (image: DiaryImageType) => {
+    // Don't open modal on mobile devices
+    if (isMobile) {
+      return;
+    }
+
     const index = entry.images.findIndex(img => img.publicId === image.publicId);
     setSelectedImageIndex(index);
     setIsModalOpen(true);

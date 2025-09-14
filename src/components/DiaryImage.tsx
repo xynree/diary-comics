@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { DiaryImage as DiaryImageType } from '@/types/diary';
 
@@ -21,17 +21,29 @@ interface DiaryImageProps {
  * - Responsive sizing
  * - Accessibility support
  */
-export function DiaryImage({ 
-  image, 
-  priority = false, 
+export function DiaryImage({
+  image,
+  priority = false,
   className = '',
-  onClick 
+  onClick
 }: DiaryImageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
 
   const handleClick = () => {
-    if (onClick) {
+    if (onClick && !isMobile) {
       onClick(image);
     }
   };
@@ -65,8 +77,10 @@ export function DiaryImage({
   }
 
   return (
-    <div 
-      className={`relative group cursor-pointer transition-transform duration-200 hover:scale-[1.02] ${className}`}
+    <div
+      className={`relative group transition-transform duration-200 ${
+        isMobile ? '' : 'cursor-pointer hover:scale-[1.02]'
+      } ${className}`}
       onClick={handleClick}
     >
       {/* Loading skeleton */}
@@ -75,7 +89,9 @@ export function DiaryImage({
       )}
       
       {/* Main image */}
-      <div className="relative overflow-hidden rounded-lg shadow-md group-hover:shadow-lg transition-shadow duration-200">
+      <div className={`relative overflow-hidden rounded-lg shadow-md transition-shadow duration-200 ${
+        isMobile ? '' : 'group-hover:shadow-lg'
+      }`}>
         <Image
           src={image.secureUrl}
           alt={`Diary entry from ${image.filename}`}
