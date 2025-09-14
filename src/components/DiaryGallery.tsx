@@ -6,7 +6,8 @@ import { SortOrder } from '@/types/diary';
 import { DiaryEntry } from './DiaryEntry';
 import { useInfiniteDiaryData } from '@/hooks/useInfiniteDiaryData';
 import { LoadingSpinner } from './LoadingSpinner';
-import { PhotoIcon, ExclamationTriangleIcon, InstagramIcon, GitHubIcon, EmailIcon, ChevronDownIcon, ArrowUpIcon } from './icons/Icons';
+import { InstagramIcon, GitHubIcon, EmailIcon } from './icons/Icons';
+import { ChevronDoubleDownIcon, ArrowUpIcon as HeroArrowUpIcon, PhotoIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 interface DiaryGalleryProps {
   className?: string;
@@ -24,6 +25,7 @@ interface DiaryGalleryProps {
  */
 export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
   const [sortOrder, setSortOrder] = useState<SortOrder>('newest-first');
+  const [targetAnchor, setTargetAnchor] = useState<string | null>(null);
   const {
     data,
     entries,
@@ -80,6 +82,39 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
       behavior: 'smooth'
     });
   };
+
+  // Handle URL anchor navigation
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && hash.startsWith('#entry-')) {
+      const dateKey = hash.replace('#entry-', '');
+      setTargetAnchor(dateKey);
+    }
+  }, []);
+
+  // Check if target entry is loaded and scroll to it
+  useEffect(() => {
+    if (!targetAnchor) return;
+
+    const targetElement = document.getElementById(`entry-${targetAnchor}`);
+    if (targetElement) {
+      // Found the target entry, scroll to it
+      setTimeout(() => {
+        targetElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+        setTargetAnchor(null); // Clear the target
+      }, 100);
+    } else if (!loading && !loadingMore && hasNextPage) {
+      // Entry not found and we have more pages, load more
+      loadMore();
+    } else if (!loading && !loadingMore && !hasNextPage) {
+      // Entry not found and no more pages, scroll to top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setTargetAnchor(null);
+    }
+  }, [targetAnchor, entries, loading, loadingMore, hasNextPage, loadMore]);
 
   // Set up intersection observer for infinite scroll
   useEffect(() => {
@@ -191,14 +226,14 @@ export function DiaryGallery({ className = '' }: DiaryGalleryProps) {
               className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-3 self-center cursor-pointer hover:bg-gray-100 rounded-full"
               aria-label="Back to top"
             >
-              <ArrowUpIcon className="w-4 h-4" />
+              <HeroArrowUpIcon className="w-4 h-4" />
             </button>
             <button
               onClick={handleSnapToNext}
               className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer duration-200 p-3 self-center hover:bg-gray-100 rounded-full"
               aria-label="Snap to next panel"
             >
-              <ChevronDownIcon className="w-4 h-4" />
+              <ChevronDoubleDownIcon className="w-4 h-4" />
             </button>
        
           </div>

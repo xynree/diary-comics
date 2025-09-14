@@ -6,6 +6,7 @@ import { DiaryImage } from './DiaryImage';
 import { ImageModal } from './ImageModal';
 import { formatDisplayDate } from '@/utils/dateParser';
 import { CarouselLeftIcon, CarouselRightIcon } from './icons/Icons';
+import { LinkIcon } from '@heroicons/react/24/outline';
 
 // Hook to detect mobile devices
 function useIsMobile() {
@@ -63,6 +64,22 @@ export function DiaryEntry({ entry, priority = false, className = '' }: DiaryEnt
     setSelectedImageIndex(null);
   };
 
+  const handleCopyLink = async () => {
+    const url = `${window.location.origin}${window.location.pathname}#entry-${entry.dateKey}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      // Could add a toast notification here in the future
+    } catch (err) {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = url;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
+  };
+
   const handleNextImage = () => {
     if (selectedImageIndex !== null && selectedImageIndex < entry.images.length - 1) {
       setSelectedImageIndex(selectedImageIndex + 1);
@@ -100,31 +117,48 @@ export function DiaryEntry({ entry, priority = false, className = '' }: DiaryEnt
   const selectedImage = selectedImageIndex !== null ? entry.images[selectedImageIndex] : null;
 
   return (
-    <article className={`mb-10 ${className}`}>
+    <article id={`entry-${entry.dateKey}`} className={`mb-10 ${className}`}>
       {/* Date Header */}
-      <header className="mb-1 mx-20 md:px-0">
+      <header className="mb-3 mx-20 md:px-0">
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-sm font-light tracking-wide text-gray-900 mb-2">
+          <div className="flex items-center gap-1 w-full">
+            <h2 className="text-sm font-light tracking-wide text-gray-900 ">
               {formatDisplayDate(entry.date)}
             </h2>
+
+          {/* Link button */}
+            <button
+              onClick={handleCopyLink}
+              className="text-gray-400 cursor-pointer hover:text-gray-600 transition-colors duration-200 p-2 ml-auto md:ml-0 hover:bg-gray-100 rounded-full"
+              aria-label="Copy link to this entry"
+              title="Copy link to this entry"
+            >
+              <LinkIcon className="w-3 h-3" />
+            </button>
           </div>
 
-          {/* Entry actions - Instagram-style dot indicators on desktop when multiple images */}
-          {entry.images.length > 1 && (
-            <div className="hidden md:flex items-center space-x-1">
-              {entry.images.map((_, index) => (
-                <div
-                  key={index}
-                  className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
-                    index === currentImageIndex
-                      ? 'bg-blue-500'
-                      : 'bg-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
-          )}
+
+          {/* Entry actions - Instagram-style dot indicators and link button */}
+          <div className="hidden md:flex items-center space-x-3">
+
+            {/* Dot indicators when multiple images */}
+            {entry.images.length > 1 && (
+              <div className="flex items-center space-x-1">
+                {entry.images.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
+                      index === currentImageIndex
+                        ? 'bg-blue-500'
+                        : 'bg-gray-300'
+                    }`}
+                  />
+                ))}
+              </div>
+            )}
+
+
+          </div>
         </div>
 
         {/* Divider */}
@@ -272,10 +306,10 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '',
       {canScrollLeft && (
         <button
           onClick={scrollLeft}
-          className="hidden md:block absolute -left-14 top-1/2 -translate-y-1/2 z-10 text-gray-400 hover:text-gray-600 transition-colors duration-200 cursor-pointer"
+          className="hidden md:block absolute -left-17 top-1/2 -translate-y-1/2 z-10 text-gray-500 hover:text-gray-600 transition-colors duration-200 cursor-pointer px-6 py-12"
           aria-label="Scroll left"
         >
-          <CarouselLeftIcon className="w-4 h-4" />
+          <CarouselLeftIcon className="w-5 h-5" />
         </button>
       )}
 
@@ -283,10 +317,10 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '',
       {canScrollRight && (
         <button
           onClick={scrollRight}
-          className="hidden md:block absolute -right-14 top-1/2 -translate-y-1/2 z-10 text-gray-400 hover:text-gray-600 transition-colors duration-200 cursor-pointer"
+          className="hidden md:block absolute -right-15 top-1/2 -translate-y-1/2 z-10 text-gray-400 hover:text-gray-600 transition-colors duration-200 cursor-pointer px-6 py-12"
           aria-label="Scroll right"
         >
-          <CarouselRightIcon className="w-4 h-4" />
+          <CarouselRightIcon className="w-5 h-5" />
         </button>
       )}
 
@@ -317,7 +351,7 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '',
 
       {/* Instagram-style dot indicators - bottom center when multiple images */}
       {images.length > 1 && (
-        <div className="flex justify-center space-x-1 mt-3 md:hidden">
+        <div className="flex justify-center space-x-1 mt-1 md:hidden">
           {images.map((_, index) => (
             <div
               key={index}

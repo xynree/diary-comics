@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { DiaryImage } from '@/types/diary';
-import { CloseIcon, ChevronLeftIcon, ChevronRightIcon } from './icons/Icons';
+import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
 interface ImageModalProps {
   image: DiaryImage | null;
@@ -67,7 +67,7 @@ export function ImageModal({ image, isOpen, onClose, onNext, onPrevious }: Image
         className="absolute top-6 right-6 text-white/80 hover:text-white z-10 transition-colors duration-200"
         aria-label="Close modal"
       >
-        <CloseIcon className="w-6 h-6" />
+        <XMarkIcon className="w-6 h-6" />
       </button>
 
       {/* Previous button - hidden on mobile */}
