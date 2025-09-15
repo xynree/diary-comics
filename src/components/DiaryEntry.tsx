@@ -226,8 +226,7 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '',
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(images.length > 1);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [touchStartX, setTouchStartX] = useState(0);
-  const [touchEndX, setTouchEndX] = useState(0);
+
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
@@ -269,40 +268,16 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '',
     }
   };
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setTouchStartX(e.targetTouches[0].clientX);
-  };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    setTouchEndX(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (!touchStartX || !touchEndX) return;
-
-    const distance = touchStartX - touchEndX;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
-
-    if (isLeftSwipe && currentImageIndex < images.length - 1) {
-      // Swipe left - go to next image
-      const nextIndex = currentImageIndex + 1;
-      scrollToImage(nextIndex);
-    }
-
-    if (isRightSwipe && currentImageIndex > 0) {
-      // Swipe right - go to previous image
-      const prevIndex = currentImageIndex - 1;
-      scrollToImage(prevIndex);
-    }
-  };
 
   const scrollToImage = (index: number) => {
     if (scrollContainerRef.current) {
       const imageWidth = scrollContainerRef.current.clientWidth;
+      // Use auto behavior for immediate response on mobile
+      const behavior = window.innerWidth < 768 ? 'auto' : 'smooth';
       scrollContainerRef.current.scrollTo({
         left: index * imageWidth,
-        behavior: 'smooth'
+        behavior: behavior
       });
     }
   };
@@ -349,9 +324,6 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '',
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
         className="flex gap-0 md:gap-6 overflow-x-auto scrollbar-hide pb-4 md:pb-4 mobile-snap-carousel md:snap-none"
         style={{
           scrollbarWidth: 'none',
@@ -359,7 +331,10 @@ function ImageCarousel({ images, onImageClick, priority = false, className = '',
         }}
       >
         {images.map((image, index) => (
-          <div key={image.publicId} className="flex-shrink-0 w-full md:w-full max-w-none md:max-w-2xl snap-start md:snap-align-none">
+          <div
+            key={image.publicId}
+            className="flex-shrink-0 w-full md:w-full max-w-none md:max-w-2xl"
+          >
             <DiaryImage
               image={image}
               priority={priority && index === 0}

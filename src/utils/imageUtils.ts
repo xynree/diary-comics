@@ -8,15 +8,15 @@
 export interface CloudinaryTransformOptions {
   width?: number;
   height?: number;
-  quality?: 'auto:low' | 'auto:good' | 'auto:best' | 'auto:eco' | number;
-  format?: 'auto' | 'webp' | 'avif' | 'jpg' | 'png';
-  crop?: 'fit' | 'fill' | 'scale' | 'crop' | 'thumb' | 'limit' | 'pad';
-  gravity?: 'auto' | 'center' | 'face' | 'faces';
+  quality?: "auto:low" | "auto:good" | "auto:best" | "auto:eco" | number;
+  format?: "auto" | "webp" | "avif" | "jpg" | "png";
+  crop?: "fit" | "fill" | "scale" | "crop" | "thumb" | "limit" | "pad";
+  gravity?: "auto" | "center" | "face" | "faces";
 }
 
 /**
  * Generate optimized Cloudinary URL with transformations
- * 
+ *
  * @param originalUrl - The original Cloudinary secure_url
  * @param options - Transformation options
  * @returns Optimized URL with transformations
@@ -27,22 +27,22 @@ export function getOptimizedImageUrl(
 ): string {
   // Default options for gallery thumbnails
   const defaultOptions: CloudinaryTransformOptions = {
-    quality: 'auto:good',
-    format: 'auto',
-    crop: 'fit'
+    quality: "auto:good",
+    format: "auto",
+    crop: "fit",
   };
 
   const finalOptions = { ...defaultOptions, ...options };
 
   // Parse the original URL to extract the base parts
   // Example: https://res.cloudinary.com/xynree/image/upload/diary/2024/1.1.24_1.jpg
-  const urlParts = originalUrl.split('/upload/');
+  const urlParts = originalUrl.split("/upload/");
   if (urlParts.length !== 2) {
     // If URL doesn't match expected format, return original
     return originalUrl;
   }
 
-  const baseUrl = urlParts[0] + '/upload/';
+  const baseUrl = urlParts[0] + "/upload/";
   const imagePath = urlParts[1];
 
   // Build transformation string
@@ -57,9 +57,9 @@ export function getOptimizedImageUrl(
   if (finalOptions.crop) {
     transformations.push(`c_${finalOptions.crop}`);
   }
-  if (finalOptions.quality) {
-    transformations.push(`q_${finalOptions.quality}`);
-  }
+  // if (finalOptions.quality) {
+  //   transformations.push(`q_${finalOptions.quality}`);
+  // }
   if (finalOptions.format) {
     transformations.push(`f_${finalOptions.format}`);
   }
@@ -68,10 +68,10 @@ export function getOptimizedImageUrl(
   }
 
   // Combine transformations
-  const transformationString = transformations.join(',');
+  const transformationString = transformations.join(",");
 
   // Return optimized URL
-  return transformationString 
+  return transformationString
     ? `${baseUrl}${transformationString}/${imagePath}`
     : originalUrl;
 }
@@ -82,42 +82,47 @@ export function getOptimizedImageUrl(
 export const IMAGE_PRESETS = {
   // Gallery thumbnail - medium resolution, good quality
   GALLERY_THUMBNAIL: {
-    width: 800,
-    quality: 'auto:good' as const,
-    format: 'auto' as const,
-    crop: 'fit' as const
+    width: 1400,
+    quality: "auto:good" as const,
+    format: "auto" as const,
+    crop: "fit" as const,
   },
-  
+
   // Mobile thumbnail - smaller for mobile devices
   MOBILE_THUMBNAIL: {
-    width: 600,
-    quality: 'auto:good' as const,
-    format: 'auto' as const,
-    crop: 'fit' as const
+    width: 1000,
+    quality: "auto:good" as const,
+    format: "auto" as const,
+    crop: "fit" as const,
   },
-  
+
   // High quality for modal/lightbox
   HIGH_QUALITY: {
-    quality: 'auto:best' as const,
-    format: 'auto' as const,
-    crop: 'fit' as const
+    quality: "auto:best" as const,
+    format: "auto" as const,
+    crop: "fit" as const,
   },
-  
+
   // Low quality for very fast loading
   LOW_QUALITY: {
     width: 400,
-    quality: 'auto:low' as const,
-    format: 'auto' as const,
-    crop: 'fit' as const
-  }
+    quality: "auto:low" as const,
+    format: "auto" as const,
+    crop: "fit" as const,
+  },
 } as const;
 
 /**
  * Get thumbnail URL for gallery display
  * Uses medium resolution (800px width) with good quality
  */
-export function getThumbnailUrl(originalUrl: string, isMobile: boolean = false): string {
-  const preset = isMobile ? IMAGE_PRESETS.MOBILE_THUMBNAIL : IMAGE_PRESETS.GALLERY_THUMBNAIL;
+export function getThumbnailUrl(
+  originalUrl: string,
+  isMobile: boolean = false
+): string {
+  const preset = isMobile
+    ? IMAGE_PRESETS.MOBILE_THUMBNAIL
+    : IMAGE_PRESETS.GALLERY_THUMBNAIL;
   return getOptimizedImageUrl(originalUrl, preset);
 }
 

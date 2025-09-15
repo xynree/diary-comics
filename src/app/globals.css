@@ -58,15 +58,28 @@ body {
   transition-duration: 150ms;
 }
 
-/* Mobile image carousel snap scrolling with ease-in */
+/* Mobile image carousel with gentle snap and vertical scroll support */
 @media (max-width: 768px) {
   .mobile-snap-carousel {
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
+    scroll-snap-type: x proximity; /* Use proximity for gentler snapping */
+    -webkit-overflow-scrolling: touch; /* Better iOS scrolling */
+    overscroll-behavior-x: contain; /* Prevent page scroll when at boundaries */
+    touch-action: pan-x pan-y; /* Allow both horizontal carousel and vertical page scrolling */
   }
 
   .mobile-snap-carousel::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Gentle snap points that don't interfere with page scrolling */
+  .mobile-snap-carousel > div {
+    scroll-snap-align: start; /* Align to start of container */
+    scroll-snap-stop: normal; /* Allow natural scrolling through multiple images */
+    touch-action: pan-x pan-y; /* Allow both horizontal and vertical gestures */
+    user-select: none; /* Prevent text selection during touch */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
 }
 
