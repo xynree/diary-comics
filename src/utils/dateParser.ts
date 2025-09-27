@@ -1,4 +1,4 @@
-import { ParsedFilename } from "@/types/diary";
+import { ParsedFilename } from "../types/diary";
 
 /**
  * Parses filename in format M.D.YY_sequence to extract date and sequence

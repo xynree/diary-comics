@@ -85,6 +85,8 @@ export class DuplicateHandler {
       reason: "No duplicate found",
     };
 
+    let publicId = "";
+
     try {
       // Check if file still exists (it might have been moved/deleted after being detected)
       if (!require("fs").existsSync(filePath)) {
@@ -99,7 +101,7 @@ export class DuplicateHandler {
         return result;
       }
 
-      const publicId = cloudinaryPath.replace(/\.[^/.]+$/, "");
+      publicId = cloudinaryPath.replace(/\.[^/.]+$/, "");
 
       // Check if resource exists in Cloudinary
       logger.debug(`Checking Cloudinary for publicId: ${publicId}`);

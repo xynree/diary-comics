@@ -13,6 +13,7 @@ import { extname, basename } from "path";
 import { parseFilename } from "../../src/utils/dateParser.js";
 import { UploadConfig } from "../config/uploadConfig";
 import { logger } from "./logger";
+import { isFileMarkedAsUploaded } from "./fileRenamer";
 
 export interface ValidationResult {
   isValid: boolean;
@@ -180,6 +181,11 @@ export class FileValidator {
   public isDiaryFile(filePath: string): boolean {
     const extension = extname(filePath).toLowerCase().replace(".", "");
     const filename = basename(filePath);
+
+    // Skip files that are already marked as uploaded
+    if (isFileMarkedAsUploaded(filePath)) {
+      return false;
+    }
 
     // Check file format
     if (!this.config.supportedFormats.includes(extension)) {
