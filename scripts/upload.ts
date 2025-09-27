@@ -67,6 +67,7 @@ program
   .command("watch")
   .description("Start watching configured directories for new files")
   .option("-i, --immediate", "Process existing files immediately", false)
+  .option("--autodelete", "Delete files after successful upload", false)
   .action(async (options) => {
     try {
       await handleWatchCommand(options);
@@ -249,8 +250,18 @@ async function handleWatchCommand(options: any): Promise<void> {
 
   logger.info("Starting file watcher...");
 
+  if (options.autodelete) {
+    logger.info(
+      "Auto-delete mode enabled: files will be deleted after successful upload"
+    );
+  } else {
+    logger.info(
+      "File marking mode: files will be renamed with [uploaded]_ prefix after upload"
+    );
+  }
+
   const fileWatcher = new FileWatcher(config);
-  const uploadQueue = new UploadQueue(config);
+  const uploadQueue = new UploadQueue(config, options.autodelete);
 
   // Set up event handlers
   fileWatcher.on("fileQueued", (filePath: string) => {

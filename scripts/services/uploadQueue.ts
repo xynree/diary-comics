@@ -15,6 +15,7 @@ import { UploadConfig } from "../config/uploadConfig";
 import { UploadService, UploadResult } from "./uploadService";
 import { DuplicateHandler } from "./duplicateHandler";
 import { logger } from "../utils/logger";
+import { markFileAsUploaded, deleteUploadedFile } from "../utils/fileRenamer";
 
 export interface QueueItem {
   id: string;
@@ -57,12 +58,14 @@ export class UploadQueue extends EventEmitter {
   private currentBatchId: string | null = null;
   private processingCount: number = 0;
   private maxConcurrent: number = 3;
+  private autoDelete: boolean = false;
 
-  constructor(config: UploadConfig) {
+  constructor(config: UploadConfig, autoDelete: boolean = false) {
     super();
     this.config = config;
     this.uploadService = new UploadService(config);
     this.duplicateHandler = new DuplicateHandler(config);
+    this.autoDelete = autoDelete;
   }
 
   /**
@@ -249,10 +252,11 @@ export class UploadQueue extends EventEmitter {
       const result: BatchResult = {
         batchId,
         totalFiles: batchItems.length,
-        successfulFiles: 0,
-        failedFiles: batchItems.length,
-        skippedFiles: 0,
-        processingTime: endTime - startTime,
+        successful: 0,
+        failed: batchItems.length,
+        skipped: 0,
+        duration: endTime - startTime,
+        results: [],
         errors: [errorMessage],
       };
 
@@ -260,12 +264,30 @@ export class UploadQueue extends EventEmitter {
       return result;
     }
 
-    // Handle skipped files
+    // Handle skipped files (duplicates)
     const skippedResults: UploadResult[] = [];
     for (const skipped of duplicateCheck.toSkip) {
       const item = batchItems.find((i) => i.filePath === skipped.path);
       if (item) {
         item.status = "skipped";
+
+        // Mark duplicate files with [uploaded]_ prefix (unless autoDelete is enabled)
+        if (!this.autoDelete) {
+          try {
+            const renameResult = await markFileAsUploaded(skipped.path);
+            if (!renameResult.success) {
+              logger.warn(
+                `Failed to mark duplicate file as uploaded: ${renameResult.error}`
+              );
+            }
+          } catch (error) {
+            logger.warn(
+              `Error marking duplicate file as uploaded: ${skipped.path}`,
+              error
+            );
+          }
+        }
+
         skippedResults.push({
           success: true,
           filePath: skipped.path,
@@ -290,6 +312,30 @@ export class UploadQueue extends EventEmitter {
 
         if (result.success) {
           item.status = "completed";
+
+          // Handle file after successful upload based on autoDelete setting
+          try {
+            if (this.autoDelete) {
+              // Delete the file after successful upload
+              const deleteResult = await deleteUploadedFile(filePath);
+              if (!deleteResult.success) {
+                logger.warn(
+                  `Failed to delete file after upload: ${deleteResult.error}`
+                );
+              }
+            } else {
+              // Mark the file as uploaded by renaming it with [uploaded]_ prefix
+              const renameResult = await markFileAsUploaded(filePath);
+              if (!renameResult.success) {
+                logger.warn(
+                  `Failed to mark file as uploaded: ${renameResult.error}`
+                );
+              }
+            }
+          } catch (error) {
+            logger.warn(`Error handling file after upload: ${filePath}`, error);
+          }
+
           this.emit("itemCompleted", item, result);
         } else {
           item.attempts++;

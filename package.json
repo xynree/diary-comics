@@ -16,6 +16,7 @@
     "test:all": "npm run test && npm run test:e2e",
     "upload": "tsx scripts/upload.ts",
     "upload:watch": "tsx scripts/upload.ts watch",
+    "upload:watch:autodelete": "tsx scripts/upload.ts watch --autodelete",
     "upload:config": "tsx scripts/upload.ts config",
     "upload:status": "tsx scripts/upload.ts status",
     "upload:validate": "tsx scripts/upload.ts validate",
