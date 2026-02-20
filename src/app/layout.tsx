@@ -10,24 +10,24 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "xyn's diary",
-  description: "A personal collection of daily diary comics, beautifully organized and displayed chronologically.",
+  description: "Daily autobiographical comics by Xinrui Chen @xynree",
   keywords: ["diary", "comics", "art", "daily", "journal", "visual", "gallery"],
   authors: [{ name: "Xinrui Chen" }],
   icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon.png",
-    apple: "/favicon.png",
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
   },
   openGraph: {
     title: "xyn's diary",
-    description: "A personal collection of daily diary comics, beautifully organized and displayed chronologically.",
+    description: "Daily autobiographical comics by Xinrui Chen @xynree",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
     title: "xyn's diary",
-    description: "A personal collection of daily diary comics, beautifully organized and displayed chronologically.",
+    description: "Daily autobiographical comics by Xinrui Chen @xynree",
   },
   robots: {
     index: true,
@@ -42,11 +42,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${inter.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <body className={`${inter.variable} antialiased`}>{children}</body>
     </html>
   );
 }
